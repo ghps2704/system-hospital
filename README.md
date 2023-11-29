@@ -56,14 +56,16 @@ O servidor será iniciado em http://localhost:3000 por padrão.
 - **PUT /tasks/:id**: Atualizar informações de uma tarefa.
 - **DELETE /tasks/:id**: Excluir uma tarefa.
 
-Contribuição
+## Contribuição
+
 Sinta-se à vontade para contribuir com melhorias ou correções. Basta seguir estes passos:
 
-Faça um fork do repositório.
-Crie uma branch para a sua contribuição: ``git checkout -b feature/nova-funcionalidade``.
-Faça as alterações desejadas.
-Commit e faça push das alterações para o seu fork.
-Abra um pull request para revisão.
+1. Faça um fork do repositório.
+2. Crie uma branch para a sua contribuição: `git checkout -b feature/nova-funcionalidade`.
+3. Faça as alterações desejadas.
+4. Commit e faça push das alterações para o seu fork.
+5. Abra um pull request para revisão.
+
 Esperamos que este sistema seja útil para você! Se tiver dúvidas ou encontrar problemas, sinta-se à vontade para abrir uma issue.
 
 Happy coding!
