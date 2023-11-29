@@ -60,7 +60,7 @@ Contribuição
 Sinta-se à vontade para contribuir com melhorias ou correções. Basta seguir estes passos:
 
 Faça um fork do repositório.
-Crie uma branch para a sua contribuição: git checkout -b feature/nova-funcionalidade.
+Crie uma branch para a sua contribuição: ``git checkout -b feature/nova-funcionalidade``.
 Faça as alterações desejadas.
 Commit e faça push das alterações para o seu fork.
 Abra um pull request para revisão.
