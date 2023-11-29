@@ -19,42 +19,42 @@ Configure as informações do banco de dados no arquivo db.js.
 npm start
 O servidor será iniciado em http://localhost:3000 por padrão.
 
-Endpoints Disponíveis
+## Endpoints Disponíveis
 
-Médicos
-GET /doctors: Obter todos os médicos.
-GET /doctors/:id: Obter um médico específico.
-POST /doctors: Criar um novo médico.
-PUT /doctors/:id: Atualizar informações de um médico.
-DELETE /doctors/:id: Excluir um médico.
+### Médicos
+- **GET /doctors**: Obter todos os médicos.
+- **GET /doctors/:id**: Obter um médico específico.
+- **POST /doctors**: Criar um novo médico.
+- **PUT /doctors/:id**: Atualizar informações de um médico.
+- **DELETE /doctors/:id**: Excluir um médico.
 
-Enfermeiros
-GET /nurses: Obter todos os enfermeiros.
-GET /nurses/:id: Obter um enfermeiro específico.
-POST /nurses: Criar um novo enfermeiro.
-PUT /nurses/:id: Atualizar informações de um enfermeiro.
-DELETE /nurses/:id: Excluir um enfermeiro.
+### Enfermeiros
+- **GET /nurses**: Obter todos os enfermeiros.
+- **GET /nurses/:id**: Obter um enfermeiro específico.
+- **POST /nurses**: Criar um novo enfermeiro.
+- **PUT /nurses/:id**: Atualizar informações de um enfermeiro.
+- **DELETE /nurses/:id**: Excluir um enfermeiro.
 
-Pacientes
-GET /patients: Obter todos os pacientes.
-GET /patients/:id: Obter um paciente específico.
-POST /patients: Criar um novo paciente.
-PUT /patients/:id: Atualizar informações de um paciente.
-DELETE /patients/:id: Excluir um paciente.
+### Pacientes
+- **GET /patients**: Obter todos os pacientes.
+- **GET /patients/:id**: Obter um paciente específico.
+- **POST /patients**: Criar um novo paciente.
+- **PUT /patients/:id**: Atualizar informações de um paciente.
+- **DELETE /patients/:id**: Excluir um paciente.
 
-Status dos Pacientes
-GET /patient-status: Obter todos os status dos pacientes.
-GET /patient-status/:id: Obter um status específico do paciente.
-POST /patient-status: Criar um novo status do paciente.
-PUT /patient-status/:id: Atualizar informações de um status do paciente.
-DELETE /patient-status/:id: Excluir um status do paciente.
+### Status dos Pacientes
+- **GET /patient-status**: Obter todos os status dos pacientes.
+- **GET /patient-status/:id**: Obter um status específico do paciente.
+- **POST /patient-status**: Criar um novo status do paciente.
+- **PUT /patient-status/:id**: Atualizar informações de um status do paciente.
+- **DELETE /patient-status/:id**: Excluir um status do paciente.
 
-Tarefas
-GET /tasks: Obter todas as tarefas.
-GET /tasks/:id: Obter uma tarefa específica.
-POST /tasks: Criar uma nova tarefa.
-PUT /tasks/:id: Atualizar informações de uma tarefa.
-DELETE /tasks/:id: Excluir uma tarefa.
+### Tarefas
+- **GET /tasks**: Obter todas as tarefas.
+- **GET /tasks/:id**: Obter uma tarefa específica.
+- **POST /tasks**: Criar uma nova tarefa.
+- **PUT /tasks/:id**: Atualizar informações de uma tarefa.
+- **DELETE /tasks/:id**: Excluir uma tarefa.
 
 Contribuição
 Sinta-se à vontade para contribuir com melhorias ou correções. Basta seguir estes passos:
