@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const doctorsRoutes = require('./routes/doctors');
 const nursesRoutes = require('./routes/nurses');
-const patientRoutes = require('./routes/patients');
 const tasksRoutes = require('./routes/tasks');
 const medicationsRoutes = require('./routes/medications');
 const patientStatusRoutes = require('./routes/patientStatus');
@@ -15,7 +14,6 @@ app.use(bodyParser.json());
 
 app.use('/api', doctorsRoutes);
 app.use('/api', nursesRoutes);
-app.use('/api', patientRoutes);
 app.use('/api', tasksRoutes);
 app.use('/api', medicationsRoutes);
 app.use('/api', patientStatusRoutes);

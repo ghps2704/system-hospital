@@ -1,6 +1,11 @@
+const express = require('express');
 const db = require('../db');
 
-// Operação de leitura (get all tasks)
+const handleErrors = (res, err, errorMessage) => {
+  console.error(err);
+  res.status(500).json({ error: errorMessage });
+};
+
 exports.getAllTasks = (req, res) => {
   db.query('SELECT * FROM Task', (err, results) => {
     if (err) {
@@ -11,71 +16,73 @@ exports.getAllTasks = (req, res) => {
   });
 };
 
-// Operação de criação (create task)
-exports.createTask = (req, res) => {
-  const { title, description, status } = req.body;
+exports.createTasks = async (req, res) => {
+  try {
+    const { id, doctor_id, description, status, due_date } = req.body;
 
-  if (!title || !description || !status) {
-    return res.status(400).json({ error: 'Título, descrição e status são obrigatórios.' });
+    const query = 'INSERT INTO Task (id, doctor_id, description, status, due_date) VALUES (?, ?, ?, ?, ?)';
+    const values = [id, doctor_id, description, status, due_date];
+
+    const [result] = await db.promise().execute(query, values);
+    console.log('Resultado do INSERT:', result);
+
+    res.status(201).json({ id: result.insertId, description, status });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao adicionar uma tarefa.' });
   }
-
-  const newTask = { title, description, status };
-
-  db.query('INSERT INTO Task SET ?', newTask, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.status(201).json({ message: 'Tarefa criada com sucesso.', id: result.insertId });
-    }
-  });
 };
 
-// Operação de atualização (update task)
-exports.updateTask = (req, res) => {
-  const { id } = req.params;
-  const { title, description, status } = req.body;
+exports.updateTask = async (req, res) => {
+  try {
+    const { id, doctor_id, description, status, due_date } = req.body;
 
-  if (!title || !description || !status) {
-    return res.status(400).json({ error: 'Título, descrição e status são obrigatórios.' });
+    if (!id || isNaN(id)) {
+      return res.status(400).json({ error: 'O ID da tarefa é obrigatório e deve ser um número.' });
+    }
+
+    const dueDate = new Date(due_date);
+    
+    if (isNaN(dueDate.getTime())) {
+      return res.status(400).json({ error: 'A data fornecida não é válida.' });
+    }
+
+    const formattedDueDate = dueDate.toISOString().split('T')[0];
+
+    const query = 'UPDATE Task SET doctor_id = ?, description = ?, status = ?, due_date = ? WHERE id = ?';
+    const values = [doctor_id, description, status, formattedDueDate, id];
+
+    const [result] = await db.promise().execute(query, values);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Tarefa não encontrada para atualização.' });
+    }
+
+    res.status(200).json({ message: 'Tarefa atualizada com sucesso.', updatedTaskId: id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao atualizar a tarefa.' });
   }
-
-  const updatedTask = { title, description, status };
-
-  db.query('UPDATE Task SET ? WHERE id = ?', [updatedTask, id], (err) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.status(200).json({ message: 'Tarefa atualizada com sucesso.' });
-    }
-  });
 };
 
-// Operação de leitura específica (get one task)
-exports.getOneTask = (req, res) => {
-  const { id } = req.params;
+exports.deleteTask = async (req, res) => {
+  try {
+    const { taskId } = req.params;
 
-  db.query('SELECT * FROM Task WHERE id = ?', id, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else if (result.length === 0) {
-      res.status(404).json({ error: 'Tarefa não encontrada.' });
-    } else {
-      res.status(200).json(result[0]);
+    if (!taskId || isNaN(taskId)) {
+      return res.status(400).json({ error: 'O ID da tarefa é obrigatório e deve ser um número.' });
     }
-  });
-};
 
-// Operação de exclusão (delete task)
-exports.deleteTask = (req, res) => {
-  const { id } = req.params;
+    const deleteQuery = 'DELETE FROM Task WHERE id = ?';
+    const [result] = await db.promise().execute(deleteQuery, [taskId]);
 
-  db.query('DELETE FROM Task WHERE id = ?', id, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else if (result.affectedRows === 0) {
-      res.status(404).json({ error: 'Tarefa não encontrada.' });
-    } else {
-      res.status(200).json({ message: 'Tarefa excluída com sucesso.' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Tarefa não encontrada para exclusão.' });
     }
-  });
+
+    res.status(200).json({ message: 'Tarefa excluída com sucesso.', deletedTaskId: taskId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao excluir a tarefa.' });
+  }
 };

@@ -1,11 +1,12 @@
 const express = require('express');
-const adminController = require('../controllers/adminController');
+const adminController = require('../controllers/adminsController');
 
 const router = express.Router();
 
-// Rota para obter todos os administradores
-router.get('/admins', adminController.getAllAdmins);
 
-// Outras rotas CRUD para administradores podem ser adicionadas aqui
+router.get('/admins', adminController.getAllAdmins);
+router.post('/admins/create', adminController.createAdmins);
+router.put('/admins/:id', adminController.updateAdmin);
+router.delete('/admins/:adminId', adminController.deleteAdmin);
 
 module.exports = router;

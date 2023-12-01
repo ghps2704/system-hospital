@@ -3,9 +3,10 @@ const nursesController = require('../controllers/nursesController');
 
 const router = express.Router();
 
-// Rota para obter todos os enfermeiros
 router.get('/nurses', nursesController.getAllNurses);
+router.post('/nurses/create', nursesController.createNurse);
+router.put('/nurses/:id', nursesController.updateNurse);
+router.delete('/nurses/:nurseId', nursesController.deleteNurse);
 
-// Outras rotas CRUD para enfermeiros podem ser adicionadas aqui
 
 module.exports = router;

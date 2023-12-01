@@ -3,9 +3,8 @@ const patientStatusController = require('../controllers/patientStatusController'
 
 const router = express.Router();
 
-// Rota para obter todos os status dos pacientes
 router.get('/patient-status', patientStatusController.getAllPatientStatus);
-
-// Outras rotas CRUD para status dos pacientes podem ser adicionadas aqui
+router.post('/patient-status/create', patientStatusController.createPatientStatus);
+router.put('/patient-status/:id', patientStatusController.updatePatientStatus);
 
 module.exports = router;

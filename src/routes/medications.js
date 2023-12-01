@@ -3,9 +3,9 @@ const medicationsController = require('../controllers/medicationsController');
 
 const router = express.Router();
 
-// Rota para obter todos os medicamentos
 router.get('/medications', medicationsController.getAllMedications);
-
-// Outras rotas CRUD para medicamentos podem ser adicionadas aqui
+router.post('/medications/create', medicationsController.createMedication);
+router.put('/medications/:id', medicationsController.updateMedication);
+router.delete('/medications/:medicationId', medicationsController.deleteMedication);
 
 module.exports = router;

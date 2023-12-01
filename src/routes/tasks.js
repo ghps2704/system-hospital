@@ -3,9 +3,10 @@ const tasksController = require('../controllers/tasksController');
 
 const router = express.Router();
 
-// Rota para obter todas as tarefas
 router.get('/tasks', tasksController.getAllTasks);
+router.post('/tasks/create', tasksController.createTasks);
+router.put('/tasks/:id', tasksController.updateTask);
+router.delete('/tasks/:taskId', tasksController.deleteTask);
 
-// Outras rotas CRUD para tarefas podem ser adicionadas aqui
 
 module.exports = router;

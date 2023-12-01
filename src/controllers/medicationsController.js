@@ -1,6 +1,10 @@
 const db = require('../db');
 
-// Operação de leitura (get all medications)
+const handleErrors = (res, err, errorMessage) => {
+  console.error(err);
+  res.status(500).json({ error: errorMessage });
+};
+
 exports.getAllMedications = (req, res) => {
   db.query('SELECT * FROM Medication', (err, results) => {
     if (err) {
@@ -11,71 +15,87 @@ exports.getAllMedications = (req, res) => {
   });
 };
 
-// Operação de criação (create medication)
-exports.createMedication = (req, res) => {
-  const { name, dosage } = req.body;
+exports.createMedication = async (req, res) => {
+  try {
+    const { id, name, description, stock_quantity } = req.body;
 
-  if (!name || !dosage) {
-    return res.status(400).json({ error: 'Nome e dosagem são obrigatórios.' });
+    const query = 'INSERT INTO Medication (id, name, description, stock_quantity) VALUES (?, ?, ?, ?)';
+    const values = [id, name, description, stock_quantity];
+
+    const [result] = await db.promise().execute(query, values);
+    console.log('Resultado do INSERT:', result);
+
+    res.status(201).json({ id: result.insertId, name, stock_quantity });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao criar um novo remédio.' });
   }
-
-  const newMedication = { name, dosage };
-
-  db.query('INSERT INTO Medication SET ?', newMedication, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.status(201).json({ message: 'Medicamento criado com sucesso.', id: result.insertId });
-    }
-  });
 };
 
-// Operação de atualização (update medication)
-exports.updateMedication = (req, res) => {
-  const { id } = req.params;
-  const { name, dosage } = req.body;
+exports.updateMedication = async (req, res) => {
+  try {
+    const { id, name, description, stock_quantity } = req.body;
 
-  if (!name || !dosage) {
-    return res.status(400).json({ error: 'Nome e dosagem são obrigatórios.' });
+    if (!id || isNaN(id)) {
+      return res.status(400).json({ error: 'O ID da medicação é obrigatório e deve ser um número.' });
+    }
+
+    const updateFields = [];
+    const values = [];
+
+    if (name) {
+      updateFields.push('name = ?');
+      values.push(name);
+    }
+
+    if (description) {
+      updateFields.push('description = ?');
+      values.push(description);
+    }
+
+    if (!isNaN(stock_quantity)) {
+      updateFields.push('stock_quantity = ?');
+      values.push(stock_quantity);
+    }
+
+    if (updateFields.length === 0) {
+      return res.status(400).json({ error: 'Nenhum campo fornecido para atualização.' });
+    }
+
+    const updateQuery = `UPDATE Medication SET ${updateFields.join(', ')} WHERE id = ?`;
+    values.push(id);
+
+    const [result] = await db.promise().execute(updateQuery, values);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Medicação não encontrada para atualização.' });
+    }
+
+    res.status(200).json({ message: 'Medicação atualizada com sucesso.', updatedMedicationId: id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao atualizar a medicação.' });
   }
-
-  const updatedMedication = { name, dosage };
-
-  db.query('UPDATE Medication SET ? WHERE id = ?', [updatedMedication, id], (err) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.status(200).json({ message: 'Medicamento atualizado com sucesso.' });
-    }
-  });
 };
 
-// Operação de leitura específica (get one medication)
-exports.getOneMedication = (req, res) => {
-  const { id } = req.params;
+exports.deleteMedication = async (req, res) => {
+  try {
+    const { medicationId } = req.params;
 
-  db.query('SELECT * FROM Medication WHERE id = ?', id, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else if (result.length === 0) {
-      res.status(404).json({ error: 'Medicamento não encontrado.' });
-    } else {
-      res.status(200).json(result[0]);
+    if (!medicationId || isNaN(medicationId)) {
+      return res.status(400).json({ error: 'O ID da medicação é obrigatório e deve ser um número.' });
     }
-  });
-};
 
-// Operação de exclusão (delete medication)
-exports.deleteMedication = (req, res) => {
-  const { id } = req.params;
+    const deleteQuery = 'DELETE FROM Medication WHERE id = ?';
+    const [result] = await db.promise().execute(deleteQuery, [medicationId]);
 
-  db.query('DELETE FROM Medication WHERE id = ?', id, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else if (result.affectedRows === 0) {
-      res.status(404).json({ error: 'Medicamento não encontrado.' });
-    } else {
-      res.status(200).json({ message: 'Medicamento excluído com sucesso.' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Medicação não encontrada para exclusão.' });
     }
-  });
+
+    res.status(200).json({ message: 'Medicação excluída com sucesso.', deletedMedicationId: medicationId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao excluir a medicação.' });
+  }
 };

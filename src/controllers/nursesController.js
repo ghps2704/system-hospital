@@ -1,6 +1,10 @@
 const db = require('../db');
 
-// Operação de leitura (get all nurses)
+const handleErrors = (res, err, errorMessage) => {
+  console.error(err);
+  res.status(500).json({ error: errorMessage });
+};
+
 exports.getAllNurses = (req, res) => {
   db.query('SELECT * FROM Nurse', (err, results) => {
     if (err) {
@@ -11,71 +15,82 @@ exports.getAllNurses = (req, res) => {
   });
 };
 
-// Operação de criação (create nurse)
-exports.createNurse = (req, res) => {
-  const { name, shift } = req.body;
+exports.createNurse = async (req, res) => {
+  try {
+    const { user_id, name, qualification } = req.body;
 
-  if (!name || !shift) {
-    return res.status(400).json({ error: 'Nome e turno são obrigatórios.' });
+    const query = 'INSERT INTO Nurse (user_id, name, qualification) VALUES (?, ?, ?)';
+    const values = [user_id, name, qualification];
+
+    const [result] = await db.promise().execute(query, values);
+    console.log('Resultado do INSERT:', result);
+
+    res.status(201).json({ id: result.insertId, name, qualification });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao adicionar uma enfermeira.' });
   }
-
-  const newNurse = { name, shift };
-
-  db.query('INSERT INTO Nurse SET ?', newNurse, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.status(201).json({ message: 'Enfermeiro criado com sucesso.', id: result.insertId });
-    }
-  });
 };
 
-// Operação de atualização (update nurse)
-exports.updateNurse = (req, res) => {
-  const { id } = req.params;
-  const { name, shift } = req.body;
+exports.updateNurse = async (req, res) => {
+  try {
+    const { user_id, name, qualification } = req.body;
 
-  if (!name || !shift) {
-    return res.status(400).json({ error: 'Nome e turno são obrigatórios.' });
+    if (!user_id || isNaN(user_id)) {
+      return res.status(400).json({ error: 'O ID da enfermeira é obrigatório e deve ser um número.' });
+    }
+
+    const updateFields = [];
+    const values = [];
+
+    if (name) {
+      updateFields.push('name = ?');
+      values.push(name);
+    }
+
+    if (qualification) {
+      updateFields.push('qualification = ?');
+      values.push(qualification);
+    }
+
+    if (updateFields.length === 0) {
+      return res.status(400).json({ error: 'Nenhum campo fornecido para atualização.' });
+    }
+
+    const updateQuery = `UPDATE Nurse SET ${updateFields.join(', ')} WHERE user_id = ?`;
+    values.push(user_id);
+
+    const [result] = await db.promise().execute(updateQuery, values);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Enfermeira não encontrada para atualização.' });
+    }
+
+    res.status(200).json({ message: 'Enfermeira atualizada com sucesso.', updatedNurseId: user_id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao atualizar a enfermeira.' });
   }
-
-  const updatedNurse = { name, shift };
-
-  db.query('UPDATE Nurse SET ? WHERE id = ?', [updatedNurse, id], (err) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.status(200).json({ message: 'Enfermeiro atualizado com sucesso.' });
-    }
-  });
 };
 
-// Operação de leitura específica (get one nurse)
-exports.getOneNurse = (req, res) => {
-  const { id } = req.params;
+exports.deleteNurse = async (req, res) => {
+  try {
+    const { nurseId } = req.params;
 
-  db.query('SELECT * FROM Nurse WHERE id = ?', id, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else if (result.length === 0) {
-      res.status(404).json({ error: 'Enfermeiro não encontrado.' });
-    } else {
-      res.status(200).json(result[0]);
+    if (!nurseId || isNaN(nurseId)) {
+      return res.status(400).json({ error: 'O ID da enfermeira é obrigatório e deve ser um número.' });
     }
-  });
-};
 
-// Operação de exclusão (delete nurse)
-exports.deleteNurse = (req, res) => {
-  const { id } = req.params;
+    const deleteQuery = 'DELETE FROM Nurse WHERE user_id = ?';
+    const [result] = await db.promise().execute(deleteQuery, [nurseId]);
 
-  db.query('DELETE FROM Nurse WHERE id = ?', id, (err, result) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else if (result.affectedRows === 0) {
-      res.status(404).json({ error: 'Enfermeiro não encontrado.' });
-    } else {
-      res.status(200).json({ message: 'Enfermeiro excluído com sucesso.' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Enfermeira não encontrada para exclusão.' });
     }
-  });
+
+    res.status(200).json({ message: 'Enfermeira excluída com sucesso.', deletedNurseId: nurseId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao excluir a enfermeira.' });
+  }
 };

@@ -4,7 +4,9 @@ const doctorsController = require('../controllers/doctorsController');
 const router = express.Router();
 
 router.get('/doctors', doctorsController.getAllDoctors);
+router.post('/doctors/create', doctorsController.createDoctors);
+router.put('/doctors/:id', doctorsController.updateDoctor);
+router.delete('/doctors/:doctorId', doctorsController.deleteDoctor);
 
-// Outras rotas CRUD para médicos podem ser adicionadas aqui
 
 module.exports = router;
