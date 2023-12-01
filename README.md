@@ -2,6 +2,8 @@
 
 Este é um sistema hospitalar desenvolvido em Express.js para gerenciar informações sobre médicos, enfermeiros, pacientes, status dos pacientes e tarefas.
 
+Este repositório é o Back-end do projeto, o Front-end é este: ``git clone https://github.com/ghps2704/Pulse-Point.git``
+
 ## Configuração
 
 1. **Clone o Repositório:**
